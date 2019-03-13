@@ -14,7 +14,7 @@ jobs:
         environment:
           MYSQL_USER: root
           MYSQL_ALLOW_EMPTY_PASSWORD: yes
-        command: mysqld --innodb-file-format=Barracuda --innodb_file_per_table=true --innodb-large-prefix=true
+        command: mysqld --innodb_file_per_table=true --innodb-large-prefix=true --skip-name-resolve --explicit_defaults_for_timestamp
     steps:
       - checkout
       - run: bundle -v
