@@ -13,7 +13,7 @@ jobs:
       - image: circleci/mysql:5.7
         environment:
           MYSQL_USER: root
-          MYSQL_PASSWORD: root
+          MYSQL_ALLOW_EMPTY_PASSWORD: yes
         command: mysqld --innodb-file-format=Barracuda --innodb_file_per_table=true --innodb-large-prefix=true
     steps:
       - checkout
