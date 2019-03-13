@@ -1,0 +1,40 @@
+version: 2
+
+jobs:
+  build:
+    parallelism: 1
+    working_directory: ~/<%= app_name %>
+    docker:
+      - image: circleci/ruby:2.6.1-node-browsers
+        environment:
+          BUNDLE_JOBS: 3
+          BUNDLE_RETRY: 3
+          BUNDLE_PATH: vendor/bundle
+          RAILS_ENV: test
+      - image: circleci/mysql:5.7
+        environment:
+          MYSQL_USER: root
+          MYSQL_PASSWORD: root
+        command: mysqld --innodb-file-format=Barracuda --innodb_file_per_table=true --innodb-large-prefix=true
+    steps:
+      - checkout
+      - run: bundle -v
+      - restore_cache:
+          keys:
+            - bundle-v1-{{ checksum "Gemfile.lock" }}
+            - bundle-v1-
+      - run: bundle check || bundle install --clean
+      - save_cache:
+          key: bundle-v1-{{ checksum "Gemfile.lock" }}
+          paths:
+            - vendor/bundle
+      - run: bin/rails db:create
+      - run: bin/rails db:schema:load --trace
+      - run: |
+          bundle exec rspec --profile 10 \
+                            --format progress \
+                            $(circleci tests glob "spec/**/*_spec.rb" | circleci tests split --split-by=timings)
+      - store_test_results:
+          path: test-results
+      - store_artifacts:
+          path: test-results
