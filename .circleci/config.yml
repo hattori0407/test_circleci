@@ -3,7 +3,6 @@ version: 2
 jobs:
   build:
     parallelism: 1
-    working_directory: ~/<%= app_name %>
     docker:
       - image: circleci/ruby:2.6.1-node-browsers
         environment:
